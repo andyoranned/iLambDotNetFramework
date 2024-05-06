@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.navToolStrip = new System.Windows.Forms.ToolStrip();
+            this.panelNavDisplay = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.toolStripButtonAddSheep = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonDashboard = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonFlock = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonSearch = new System.Windows.Forms.ToolStripButton();
-            this.panelNavDisplay = new System.Windows.Forms.Panel();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.farmPictureBox = new System.Windows.Forms.PictureBox();
             this.navToolStrip.SuspendLayout();
@@ -66,6 +66,35 @@
             this.navToolStrip.TabIndex = 0;
             this.navToolStrip.Text = "toolStrip1";
             // 
+            // panelNavDisplay
+            // 
+            this.panelNavDisplay.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.panelNavDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(100)))), ((int)(((byte)(109)))));
+            this.panelNavDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelNavDisplay.Location = new System.Drawing.Point(0, 0);
+            this.panelNavDisplay.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panelNavDisplay.Name = "panelNavDisplay";
+            this.panelNavDisplay.Size = new System.Drawing.Size(1727, 933);
+            this.panelNavDisplay.TabIndex = 1;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.IsSplitterFixed = true;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 117);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.navToolStrip);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.panelNavDisplay);
+            this.splitContainer1.Size = new System.Drawing.Size(1924, 933);
+            this.splitContainer1.SplitterDistance = 193;
+            this.splitContainer1.TabIndex = 3;
+            // 
             // toolStripButtonAddSheep
             // 
             this.toolStripButtonAddSheep.AutoSize = false;
@@ -88,6 +117,7 @@
             this.toolStripButtonDashboard.Name = "toolStripButtonDashboard";
             this.toolStripButtonDashboard.Size = new System.Drawing.Size(175, 50);
             this.toolStripButtonDashboard.Text = "Dashboard";
+            this.toolStripButtonDashboard.Click += new System.EventHandler(this.toolStripButtonDashboard_Click);
             // 
             // toolStripButtonFlock
             // 
@@ -99,6 +129,7 @@
             this.toolStripButtonFlock.Name = "toolStripButtonFlock";
             this.toolStripButtonFlock.Size = new System.Drawing.Size(175, 50);
             this.toolStripButtonFlock.Text = "Flock";
+            this.toolStripButtonFlock.Click += new System.EventHandler(this.toolStripButtonFlock_Click);
             // 
             // toolStripButtonSearch
             // 
@@ -110,36 +141,7 @@
             this.toolStripButtonSearch.Name = "toolStripButtonSearch";
             this.toolStripButtonSearch.Size = new System.Drawing.Size(175, 50);
             this.toolStripButtonSearch.Text = "Search";
-            // 
-            // panelNavDisplay
-            // 
-            this.panelNavDisplay.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.panelNavDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(100)))), ((int)(((byte)(109)))));
-            this.panelNavDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelNavDisplay.Location = new System.Drawing.Point(0, 0);
-            this.panelNavDisplay.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.panelNavDisplay.Name = "panelNavDisplay";
-            this.panelNavDisplay.Size = new System.Drawing.Size(1727, 933);
-            this.panelNavDisplay.TabIndex = 1;
-            this.panelNavDisplay.Paint += new System.Windows.Forms.PaintEventHandler(this.panelNavDisplay_Paint);
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.IsSplitterFixed = true;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 117);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.navToolStrip);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.panelNavDisplay);
-            this.splitContainer1.Size = new System.Drawing.Size(1924, 933);
-            this.splitContainer1.SplitterDistance = 193;
-            this.splitContainer1.TabIndex = 3;
+            this.toolStripButtonSearch.Click += new System.EventHandler(this.toolStripButtonSearch_Click);
             // 
             // headerPanel
             // 
@@ -195,7 +197,6 @@
         #endregion
 
         private System.Windows.Forms.ToolStrip navToolStrip;
-        private System.Windows.Forms.Panel panelNavDisplay;
         private System.Windows.Forms.ToolStripButton toolStripButtonAddSheep;
         private System.Windows.Forms.ToolStripButton toolStripButtonDashboard;
         private System.Windows.Forms.ToolStripButton toolStripButtonFlock;
@@ -203,6 +204,7 @@
         private System.Windows.Forms.Panel headerPanel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.PictureBox farmPictureBox;
+        public System.Windows.Forms.Panel panelNavDisplay;
     }
 }
 

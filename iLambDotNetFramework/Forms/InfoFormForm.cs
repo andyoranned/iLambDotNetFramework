@@ -9,8 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+
 using System.Windows.Controls;
 using System.Windows.Forms;
 
@@ -18,99 +17,66 @@ namespace iLambDotNetFramework.Forms
 {
     public partial class InfoFormForm : Form
     {
-
-        //Fields & Properties---------------------------
-        VideoCapture _capture;           //video capture device
-        Mat _frame;                      //captured frame as matrix
-        private Thread _camera;          //Thread for camera's operations
-        bool isCameraRunning;   //flag to detect camera running
-
-        //stuff I might(not) need
-        // private const int width = 239;  //dimensions of SheepUserControl Image
-        //private const int height = 198;
-        //Bitmap _image;                   //captured frame as bitmap
-
-
+        private VideoCapture videoCapture;  //webcam object
+        private Mat frame;                  //frame coming from webcam
+        private int webcam = 0;             //0 = default camera, 1= usb webcam
 
         public InfoFormForm()
         {
-            InitializeComponent();
-            
+            InitializeComponent(); 
         }
 
 
         private void InfoFormForm_Load(object sender, EventArgs e)
         {
-            //start camera feed
-            CaptureCamera();
-            isCameraRunning = true;
-
+            InitializeWebcam();
         }
 
-        /// <summary>
-        /// Starts running the camera 
-        /// </summary>
-        private void CaptureCamera()
-        {
-            //initialize thread with method for capturing frames
-            _camera = new Thread(new ThreadStart(CaptureCameraCallback));
-            //starts thread
-            _camera.Start();
-        }
 
         /// <summary>
-        /// Captures frames from the camera & displays feed in pictureBoxCamera after resizing
+        /// Start the webcam
         /// </summary>
-        private void CaptureCameraCallback()
+        private void InitializeWebcam()
         {
-            //initialize Mat object to store frame
-            _frame = new Mat();
-            //object to access camera where 0=default camera
-            _capture = new VideoCapture(1);
-            //open default,0, camera
-            _capture.Open(1);
-
-            //Did camera successfully turn on?
-            if (_capture.IsOpened())     //yes
+            videoCapture = new VideoCapture(webcam); // 1 for usb webcam
+            if (!videoCapture.IsOpened())
             {
-                //Keep capturing frames while camera is on
-                while (isCameraRunning)
-                {
-
-                    //read a frame from camera and store in frame Mat object
-                    _capture.Read(_frame);
-                    
-                    //convert Mat object to Bitmap
-                    //_image = BitmapConverter.ToBitmap(_frame);
-
-                    Bitmap resizedImg = new Bitmap(pictureBoxCamera.Width, pictureBoxCamera.Height);
-                    using (Graphics graphics = Graphics.FromImage(resizedImg))
-                    {
-                        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                        graphics.DrawImage(BitmapConverter.ToBitmap(_frame), 0, 0, pictureBoxCamera.Width, pictureBoxCamera.Height);
-                    }
-
-
-                    //_image = resizedImg; 
-                   
-                    
-                    //Does picturebox contain Image?
-                    if (pictureBoxCamera.Image != null)//yes
-                    {
-                        //dispose of previous image to prevent memory leaks
-                        pictureBoxCamera.Image.Dispose();
-                        
-                    }
-
-                    //display the freshly converted bitmap in picturebox
-                    pictureBoxCamera.Image = resizedImg;
-
-                    //dispose of bitmap *******************CRASHES PROGRAM***************************
-                    //resizedImg.Dispose();
-                }
+                MessageBox.Show("Failed to open webcam!");
+                return;
             }
-        }//end CaptureCameraCallback()
-        
+
+            frame = new Mat();
+            Application.Idle += ProcessFrame;
+        }
+        /// <summary>
+        /// Gets a fframe from camera shrinks to picture box size and displays it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ProcessFrame(object sender, EventArgs e)
+        {
+            if (videoCapture.Read(frame))
+            {
+                Bitmap resizedImg = new Bitmap(pictureBoxCamera.Width, pictureBoxCamera.Height);
+                using (Graphics graphics = Graphics.FromImage(resizedImg))
+                {
+                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    graphics.DrawImage(BitmapConverter.ToBitmap(frame), 0, 0, pictureBoxCamera.Width, pictureBoxCamera.Height);
+                }
+
+                //Does picturebox contain Image?
+                if (pictureBoxCamera.Image != null)//yes
+                {
+                    //dispose of previous image to prevent memory leaks
+                    pictureBoxCamera.Image.Dispose();
+
+                }
+
+                //display the freshly converted bitmap in picturebox
+                pictureBoxCamera.Image = resizedImg;
+
+            }
+        }
         /// <summary>
         /// Clicking the camera button captures a picture and freezes camera feed
         /// </summary>
@@ -118,15 +84,16 @@ namespace iLambDotNetFramework.Forms
         /// <param name="e"></param>
         private void buttonSnap_Click(object sender, EventArgs e)
         {
-            if (isCameraRunning)
+            //new
+            if (videoCapture != null)
             {
-                _capture.Release();
-                isCameraRunning = false;
+                videoCapture.Release();
             }
             else
             {
                 MessageBox.Show("If you want a different picture, click the retry button.");
             }
+
         }
 
         /// <summary>
@@ -136,15 +103,11 @@ namespace iLambDotNetFramework.Forms
         /// <param name="e"></param>
         private void buttonRetry_Click(object sender, EventArgs e)
         {
-            //*************************************************Executed 3x results in crash********
-           
-            if (!isCameraRunning)
+            //new
+            if (videoCapture != null && !videoCapture.IsOpened())
             {
-                //turn on camera feed
-                CaptureCamera();
-                //set flag to designate camera is on
-                isCameraRunning = true;
-            }  
+                videoCapture = new VideoCapture(webcam); // Reopen the webcam
+            }
         }
 
         /// <summary>
@@ -154,19 +117,15 @@ namespace iLambDotNetFramework.Forms
         /// <param name="e"></param>
         private void InfoFormForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-
+            base.OnFormClosing(e);
+            videoCapture?.Release();
+            frame?.Dispose();
         }
 
-        /// <summary>
-        /// The following 7 event handlers for highlight the body part that correlates to the colors selecting from
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
+        //The following 7 event handlers for highlight the body part that correlates to the colors selecting from
         private void panelHead_MouseMove(object sender, MouseEventArgs e)
         {
             pictureBoxSheep.Image = Resources.headSheepImg;
-
         }
 
         private void panelBody_MouseMove(object sender, MouseEventArgs e)
@@ -198,6 +157,102 @@ namespace iLambDotNetFramework.Forms
         {
             pictureBoxSheep.Image = Resources.sheepImg;
         }
-        
+        /// <summary>
+        /// Determine which Gender radio button is checked
+        /// </summary>
+        /// <returns></returns>
+        public string getRadioButtonGender()
+        {
+            if (radioButtonEwe.Checked)
+            {
+                return "Ewe";
+            }
+            if (radioButtonRam.Checked) { return "Ram"; }
+
+            return "invalid";
+        }
+        /// <summary>
+        /// get date of birth DateTime
+        /// </summary>
+        /// <returns></returns>
+        public DateTime getDoB() { return dateTimePickerDoB.Value; }
+
+        public System.Drawing.Image getSheepPic() {  return pictureBoxCamera.Image; }
+
+        public string[] getHeadColours ()
+        {
+            string[] colours = getColorsArray(this.panelHead);
+            return colours;
+
+        }
+
+        public string[] getBodyColours()
+        {
+            string[] colours = getColorsArray(this.panelBody);
+            return colours;
+
+        }
+
+
+        public string[] getFrontLFLegColours()
+        {
+
+            string[] colours = getColorsArray(this.panelFtLfLeg);
+            return colours;
+        }
+
+        public string[] getFrontRTLegColours()
+        {
+            string[] colours = getColorsArray(this.panelFtRtLeg);
+            return colours;
+
+        }
+
+        public string[] getBackLFLegColours()
+        {
+
+            string[] colours = getColorsArray(this.panelBkLfLeg);
+            return colours;
+        }
+
+        public string[] getBackRTLegColours()
+        {
+            string[] colours = getColorsArray(this.panelBkRtLeg);
+            return colours;
+        }
+
+        //count how many boxes are checked inside paenl
+        public int countCheckedBoxInPanel(System.Windows.Forms.Panel panel)
+        {
+            int count = 0;
+
+            foreach (System.Windows.Forms.Control control in panel.Controls)
+            {
+                if (control is System.Windows.Forms.CheckBox checkBox && checkBox.Checked)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+        //get an array of the colors selected
+        public string[] getColorsArray(System.Windows.Forms.Panel panel)
+        {
+            string[] colours = new string[countCheckedBoxInPanel(panel)];
+            int i = 0;
+
+            foreach (System.Windows.Forms.Control control in panel.Controls)
+            {
+                
+                if (control is System.Windows.Forms.CheckBox checkBox && checkBox.Checked)
+                {
+                    colours[i] = control.Text;
+                    i++;
+                }
+            }
+
+            return colours;
+        }
     }
 }

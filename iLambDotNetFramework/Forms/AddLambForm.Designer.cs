@@ -44,6 +44,7 @@
             // 
             // splitContainerNav.Panel1
             // 
+            this.splitContainerNav.Panel1.AutoScroll = true;
             this.splitContainerNav.Panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(100)))), ((int)(((byte)(109)))));
             // 
             // splitContainerNav.Panel2
@@ -58,14 +59,16 @@
             // 
             // buttonSave
             // 
+            this.buttonSave.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.buttonSave.BackgroundImage = global::iLambDotNetFramework.Properties.Resources.icons8_arrow_48;
-            this.buttonSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.buttonSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.buttonSave.Dock = System.Windows.Forms.DockStyle.Right;
             this.buttonSave.Location = new System.Drawing.Point(1430, 0);
             this.buttonSave.Name = "buttonSave";
             this.buttonSave.Size = new System.Drawing.Size(48, 56);
             this.buttonSave.TabIndex = 0;
             this.buttonSave.UseVisualStyleBackColor = true;
+            this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
             // 
             // AddLambForm
             // 
@@ -74,7 +77,6 @@
             this.ClientSize = new System.Drawing.Size(1478, 810);
             this.Controls.Add(this.splitContainerNav);
             this.Name = "AddLambForm";
-            this.Text = "AddLambForm";
             this.splitContainerNav.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerNav)).EndInit();
             this.splitContainerNav.ResumeLayout(false);
@@ -85,6 +87,6 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer splitContainerNav;
-        private System.Windows.Forms.Button buttonSave;
+        public System.Windows.Forms.Button buttonSave;
     }
 }
